@@ -1,0 +1,43 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from scipy.stats import linregress
+
+def draw_plot():
+    # Import the data using Pandas
+    df = pd.read_csv('epa-sea-level.csv')
+
+    # Create a scatter plot using Matplotlib
+    plt.figure(figsize=(12, 6))
+    plt.scatter(df['Year'], df['CSIRO Adjusted Sea Level'], alpha=0.6, label='Original Data')
+
+    # Perform linear regression for the entire dataset
+    slope, intercept, r_value, p_value, std_err = linregress(df['Year'], df['CSIRO Adjusted Sea Level'])
+
+    # Predict sea level rise in 2050 using the linear regression
+    years_future = range(1880, 2051)
+    sea_level_future = [slope * year + intercept for year in years_future]
+    plt.plot(years_future, sea_level_future, label='Linear Regression (1880-2050)', color='orange')
+
+    # Perform linear regression for the data from 2000 onwards
+    df_recent = df[df['Year'] >= 2000]
+    slope_recent, intercept_recent, _, _, _ = linregress(df_recent['Year'], df_recent['CSIRO Adjusted Sea Level'])
+
+    # Predict sea level rise in 2050 using recent linear regression
+    sea_level_recent_future = [slope_recent * year + intercept_recent for year in years_future]
+    plt.plot(years_future, sea_level_recent_future, label='Linear Regression (2000-2050)', color='green')
+
+    # Set labels and title
+    plt.xlabel('Year')
+    plt.ylabel('Sea Level (inches)')
+    plt.title('Rise in Sea Level')
+
+    # Display legend and grid
+    plt.legend()
+    plt.grid(True)
+
+    # Save and show the plot
+    plt.savefig('sea_level_plot.png')
+    plt.show()
+
+# Run the function
+draw_plot()
